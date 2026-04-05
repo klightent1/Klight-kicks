@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,148 +7,48 @@
 <title>KLight Kicks</title>
 
 <style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    background: #f8f9fa;
-}
-
-header {
-    background: linear-gradient(90deg, #ff512f, #dd2476);
-    color: white;
-    text-align: center;
-    padding: 20px;
-}
-
-nav {
-    background: #111;
-    padding: 10px;
-    text-align: center;
-}
-
-nav input {
-    padding: 8px;
-    width: 60%;
-    border-radius: 5px;
-    border: none;
-}
-
-.hero {
-    height: 280px;
-    background: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff') center/cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2em;
-}
-
-.container {
-    padding: 20px;
-}
-
-.products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-
-.product {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    transition: 0.3s;
-}
-
-.product:hover {
-    transform: scale(1.05);
-}
-
-button {
-    background: #ff512f;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.cart {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 20px;
-}
-
-input, select {
-    padding: 10px;
-    margin: 5px;
-    width: 95%;
-}
-
-footer {
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 15px;
-}
+body{font-family:'Segoe UI';margin:0;background:#f4f6f9;}
+header{background:linear-gradient(90deg,#ff512f,#dd2476);color:white;text-align:center;padding:20px;}
+nav{background:#111;padding:10px;text-align:center;}
+nav input{padding:10px;width:60%;border-radius:6px;border:none;}
+.hero{height:250px;background:url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519') center/cover;display:flex;align-items:center;justify-content:center;color:white;font-size:2em;}
+.container{padding:20px;}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;}
+.product{background:white;padding:15px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.1);text-align:center;}
+.product img{width:100%;height:160px;object-fit:cover;border-radius:10px;}
+button{background:#ff512f;color:white;border:none;padding:10px;border-radius:6px;cursor:pointer;width:100%;}
+.cart,.admin,.dashboard{background:white;padding:15px;border-radius:12px;margin-top:20px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
+input,select{padding:10px;margin:5px;width:95%;border-radius:6px;border:1px solid #ddd;}
+footer{background:#111;color:white;text-align:center;padding:15px;margin-top:20px;}
+.small-btn{margin-top:5px;background:#333;}
 </style>
+
 </head>
 
 <body>
 
 <header>
 <h1>KLight Kicks 👟</h1>
-<p>Karatina’s #1 Rubber Shoe Store</p>
+<p>Premium Sneakers Store</p>
 </header>
 
 <nav>
 <input type="text" id="search" placeholder="Search shoes..." onkeyup="searchProducts()">
 </nav>
 
-<div class="hero">
-Upgrade Your Style 🔥
-</div>
+<div class="hero">Upgrade Your Style 🔥</div>
 
 <div class="container">
-
 <h2>Shop</h2>
-
-<div class="products" id="product-list"><div class="product">
-<h3>Nike Air Force 1</h3>
-<p>KES 2800</p>
-<button onclick="addToCart('Nike Air Force 1',2800)">Add</button>
-</div>
-
-<div class="product">
-<h3>Classic Rubber Shoes</h3>
-<p>KES 1500</p>
-<button onclick="addToCart('Classic Rubber Shoes',1500)">Add</button>
-</div>
-
-<div class="product">
-<h3>Sport Sneakers</h3>
-<p>KES 2000</p>
-<button onclick="addToCart('Sport Sneakers',2000)">Add</button>
-</div>
-
-<div class="product">
-<h3>Casual Shoes</h3>
-<p>KES 1800</p>
-<button onclick="addToCart('Casual Shoes',1800)">Add</button>
-</div>
-
-</div>
+<div class="products" id="product-list"></div>
 
 <div class="cart">
 <h2>🛒 Cart</h2>
 <ul id="cart-items"></ul>
 <p><strong>Total: KES <span id="total">0</span></strong></p>
 
-<h3>Customer Details</h3>
-<input type="text" id="name" placeholder="Your Name">
-<input type="text" id="phone" placeholder="Phone Number">
+<input id="name" placeholder="Your Name">
+<input id="phone" placeholder="Phone Number">
 
 <select id="location">
 <option value="Karatina-0">Karatina (Free)</option>
@@ -156,85 +57,208 @@ Upgrade Your Style 🔥
 </select>
 
 <button onclick="checkout()">Place Order</button>
+
+</div>
+
+<div class="dashboard">
+<h2>📊 Sales Dashboard</h2>
+<p>Total Orders: <span id="order-count">0</span></p>
+<p>Total Revenue: KES <span id="revenue">0</span></p>
+<button onclick="viewOrders()">View Orders</button>
+</div>
+
+<div class="admin">
+<h2>🔒 Admin Panel</h2>
+<input id="admin-product" placeholder="Product ID (p0)">
+<input id="admin-size" placeholder="Size (36-45)">
+<input id="admin-stock" placeholder="New Stock">
+<button onclick="updateStock()">Update Stock</button>
 </div>
 
 </div>
 
-<div class="container">
-<h2>Payment</h2>
-<p><strong>M-Pesa Paybill:</strong> 542542</p>
-<p><strong>Account:</strong> 82089</p>
-<p>Send payment then confirm via WhatsApp</p>
-
-<h2>Follow Us</h2>
-<p>
-<a href="#" target="_blank">🎵 TikTok</a> |
-<a href="#" target="_blank">📸 Instagram</a> |
-<a href="#" target="_blank">👍 Facebook</a>
-</p>
-</div>
-
-<footer>
-<p>© 2026 KLight Kicks | Karatina</p>
-</footer>
+<footer>© 2026 KLight Kicks</footer>
 
 <script>
-let cart = [];
-let total = 0;
+let cart=[], total=0;
+let orders=JSON.parse(localStorage.getItem("orders"))||[];
+let revenue=JSON.parse(localStorage.getItem("revenue"))||0;
 
-function addToCart(name, price) {
-    cart.push({name, price});
-    total += price;
-    displayCart();
+let products=["Air Force 1","Air Max","Jordan","Yeezy","Adidas","Puma","Reebok","NB","Vans","Converse","Sketchers","Zoom","UA","Balenciaga","Gucci","Runner"];
+let sizes=[36,37,38,39,40,41,42,43,44,45];
+
+// STOCK
+let stockData=JSON.parse(localStorage.getItem("stock"))||{};
+products.forEach((p,i)=>{
+let id="p"+i;
+if(!stockData[id]){
+stockData[id]={};
+sizes.forEach(s=>stockData[id][s]=20);
+}
+});
+
+// CREATE PRODUCTS
+let container=document.getElementById("product-list");
+products.forEach((p,i)=>{
+let id="p"+i;
+container.innerHTML+=`
+<div class="product">
+<img src="https://source.unsplash.com/300x200/?sneakers">
+<h3>${p}</h3>
+<p>KES 3500</p>
+
+<select id="size-${id}">
+${sizes.map(s=>`<option>${s}</option>`).join("")}
+</select>
+
+<p id="stock-${id}"></p>
+
+<button onclick="addToCart('${p}',3500,'${id}')">Add</button>
+</div>`;
+});
+
+function save(){localStorage.setItem("stock",JSON.stringify(stockData));}
+
+// STOCK DISPLAY
+function updateStockDisplay(id){
+let txt="Stock: ";
+for(let s in stockData[id]) txt+=s+"("+stockData[id][s]+") ";
+document.getElementById("stock-"+id).textContent=txt;
 }
 
-function displayCart() {
-    let list = document.getElementById("cart-items");
-    list.innerHTML = "";
+// ADD TO CART
+function addToCart(name,price,id){
+let size=document.getElementById("size-"+id).value;
 
-    cart.forEach((item, index) => {
-        let li = document.createElement("li");
-        li.textContent = item.name + " - KES " + item.price;
-        list.appendChild(li);
-    });
-
-    document.getElementById("total").textContent = total;
+if(stockData[id][size]<=0){
+alert("❌ Size "+size+" out of stock");
+return;
 }
 
-function checkout() {
-    let name = document.getElementById("name").value;
-    let phone = document.getElementById("phone").value;
+stockData[id][size]--;
+cart.push({name,price,size});
+total+=price;
 
-    let loc = document.getElementById("location").value.split("-");
-    let location = loc[0];
-    let deliveryFee = parseInt(loc[1]);
-
-    let finalTotal = total + deliveryFee;
-
-    let message = "🛒 *KLight Kicks Order*%0A";
-    message += "Name: " + name + "%0A";
-    message += "Phone: " + phone + "%0A%0A";
-
-    cart.forEach(item => {
-        message += item.name + " - KES " + item.price + "%0A";
-    });
-
-    message += "%0ADelivery: " + location;
-    message += "%0ATotal: KES " + finalTotal;
-    message += "%0A%0APaybill: 542542 Account: 82089";
-
-    window.open("https://wa.me/254721698932?text=" + message);
+save();
+updateStockDisplay(id);
+displayCart();
 }
 
-function searchProducts() {
-    let input = document.getElementById("search").value.toLowerCase();
-    let products = document.querySelectorAll(".product");
+// DISPLAY CART
+function displayCart(){
+let list=document.getElementById("cart-items");
+list.innerHTML="";
 
-    products.forEach(p => {
-        let text = p.innerText.toLowerCase();
-        p.style.display = text.includes(input) ? "" : "none";
-    });
+cart.forEach((item,i)=>{
+let li=document.createElement("li");
+li.innerHTML=`${item.name} (Size ${item.size}) - KES ${item.price}
+<button class="small-btn" onclick="removeItem(${i})">Remove</button>`;
+list.appendChild(li);
+});
+
+document.getElementById("total").textContent=total;
 }
+
+// REMOVE ITEM
+function removeItem(i){
+total-=cart[i].price;
+cart.splice(i,1);
+displayCart();
+}
+
+// CHECKOUT (WHATSAPP)
+function checkout(){
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+
+if(!name || !phone){
+alert("Enter name & phone");
+return;
+}
+
+let loc=document.getElementById("location").value.split("-");
+let location=loc[0];
+let fee=parseInt(loc[1]);
+
+let finalTotal=total+fee;
+
+// ORDER ID
+let orderId="KK"+Math.floor(Math.random()*100000);
+
+let msg="🛒 *KLight Kicks Order*%0A";
+msg+="Order ID: "+orderId+"%0A";
+msg+="Name: "+name+"%0A";
+msg+="Phone: "+phone+"%0A%0A";
+
+cart.forEach(i=>{
+msg+=`${i.name} (Size ${i.size}) - KES ${i.price}%0A`;
+});
+
+msg+="%0ADelivery: "+location;
+msg+="%0ATotal: KES "+finalTotal;
+msg+="%0A%0APaybill: 542542 Account: 82089";
+msg+="%0ASend screenshot after payment";
+
+// SAVE ORDER
+orders.push({orderId,name,phone,cart,total:finalTotal});
+revenue+=finalTotal;
+
+localStorage.setItem("orders",JSON.stringify(orders));
+localStorage.setItem("revenue",JSON.stringify(revenue));
+
+updateDashboard();
+
+// OPEN WHATSAPP
+window.open("https://wa.me/254721698932?text="+msg);
+
+// RESET CART
+cart=[];
+total=0;
+displayCart();
+}
+
+// DASHBOARD
+function updateDashboard(){
+document.getElementById("order-count").textContent=orders.length;
+document.getElementById("revenue").textContent=revenue;
+}
+
+// VIEW ORDERS
+function viewOrders(){
+alert(JSON.stringify(orders,null,2));
+}
+
+// ADMIN
+function updateStock(){
+let p=document.getElementById("admin-product").value;
+let s=document.getElementById("admin-size").value;
+let q=parseInt(document.getElementById("admin-stock").value);
+
+if(!stockData[p]){
+alert("Invalid product ID");
+return;
+}
+
+stockData[p][s]=q;
+save();
+updateStockDisplay(p);
+
+alert("Stock updated!");
+}
+
+// SEARCH
+function searchProducts(){
+let input=document.getElementById("search").value.toLowerCase();
+document.querySelectorAll(".product").forEach(p=>{
+p.style.display=p.innerText.toLowerCase().includes(input)?"":"none";
+});
+}
+
+// INIT
+window.onload=()=>{
+products.forEach((p,i)=>updateStockDisplay("p"+i));
+updateDashboard();
+};
 </script>
 
 </body>
