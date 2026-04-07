@@ -12,44 +12,74 @@ body { margin:0; font-family:Arial; background:#f5f5f5; }
 /* NAVBAR */
 .navbar {
   display:flex; justify-content:space-between; align-items:center;
-  background:white; padding:10px 20px;
+  background:white; padding:12px 20px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
+
 .logo { font-size:22px; font-weight:bold; }
 
-.search input { padding:10px; width:250px; }
-.search button { padding:10px; background:orange; border:none; }
-
-.nav-links { display:flex; gap:15px; cursor:pointer; }
-
-/* LAYOUT */
-.container { display:flex; }
-
-/* SIDEBAR */
-.sidebar {
-  width:200px; background:white; padding:10px;
+.search input {
+  padding:10px;
+  width:220px;
+  border:1px solid #ccc;
 }
-.sidebar div { padding:10px; cursor:pointer; }
-.sidebar div:hover { background:#eee; }
 
-/* HERO */
-.hero { flex:1; padding:10px; }
-.hero img { width:100%; border-radius:10px; }
+.search button {
+  padding:10px;
+  background:orange;
+  border:none;
+  color:white;
+}
+
+.cart-btn { cursor:pointer; font-weight:bold; }
+
+/* FILTER BAR */
+.filters {
+  display:flex;
+  gap:10px;
+  padding:10px;
+  background:white;
+}
+
+.filters button {
+  padding:8px;
+  border:none;
+  cursor:pointer;
+}
 
 /* PRODUCTS */
 .products {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:15px; padding:10px;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+  padding:20px;
 }
+
 .card {
-  background:white; padding:10px;
-  border-radius:10px; text-align:center;
+  background:white;
+  border-radius:12px;
+  padding:10px;
+  transition:0.3s;
 }
-.card img { width:100%; }
+
+.card:hover { transform:scale(1.03); }
+
+.card img {
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+.price { color:green; font-weight:bold; }
 
 button {
-  background:orange; border:none;
-  padding:8px; cursor:pointer;
+  width:100%;
+  padding:10px;
+  background:orange;
+  border:none;
+  color:white;
+  margin-top:10px;
 }
 
 /* CART */
@@ -59,8 +89,15 @@ button {
   bottom:10px;
   background:white;
   padding:15px;
+  width:260px;
   border-radius:10px;
-  width:250px;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+input {
+  width:100%;
+  padding:8px;
+  margin:5px 0;
 }
 </style>
 
@@ -68,38 +105,25 @@ button {
 
 <body>
 
-<!-- NAVBAR -->
-
 <div class="navbar">
   <div class="logo">Klight Kicks 👟</div>
 
   <div class="search">
-    <input type="text" placeholder="Search shoes...">
-    <button>Search</button>
+    <input type="text" id="search" placeholder="Search..." onkeyup="searchProducts()">
   </div>
 
-  <div class="nav-links">
-    <div>Account</div>
-    <div>Help</div>
-    <div onclick="toggleCart()">Cart 🛒 (<span id="cart-count">0</span>)</div>
+  <div class="cart-btn" onclick="toggleCart()">
+    Cart 🛒 (<span id="cart-count">0</span>)
   </div>
 </div>
 
-<!-- MAIN -->
+<!-- FILTERS -->
 
-<div class="container">
-
-  <div class="sidebar">
-    <div>👟 Sneakers</div>
-    <div>🔥 Deals</div>
-    <div>🏃 Sports</div>
-    <div>💎 Premium</div>
-  </div>
-
-  <div class="hero">
-    <img src="https://via.placeholder.com/800x300?text=BIG+SALE+UP+TO+50%">
-  </div>
-
+<div class="filters">
+  <button onclick="filterCategory('all')">All</button>
+  <button onclick="filterCategory('nike')">Nike</button>
+  <button onclick="filterCategory('adidas')">Adidas</button>
+  <button onclick="filterCategory('jordan')">Jordan</button>
 </div>
 
 <!-- PRODUCTS -->
@@ -109,67 +133,98 @@ button {
 <!-- CART -->
 
 <div class="cart-box" id="cart" style="display:none;">
-  <h3>Cart</h3>
+  <h3>Your Order</h3>
   <div id="cart-items"></div>
-  <h4>Total: $<span id="total">0</span></h4>
-  <button onclick="checkout()">Order via WhatsApp</button>
+
+  <p>Delivery: KSh 300</p>
+  <h4>Total: KSh <span id="total">0</span></h4>
+
+  <input id="name" placeholder="Your Name">
+  <input id="location" placeholder="Location">
+
+<button onclick="checkout()">Order via WhatsApp</button>
+
 </div>
 
 <script>
-const products = [
-  {name:"Nike Air Max", price:120, img:"https://via.placeholder.com/200"},
-  {name:"Adidas Ultraboost", price:110, img:"https://via.placeholder.com/200"},
-  {name:"Jordan 4", price:150, img:"https://via.placeholder.com/200"},
-  {name:"Puma RS-X", price:90, img:"https://via.placeholder.com/200"}
+let products = [
+ {name:"Nike Air Force 1", price:8500, category:"nike", img:"https://images.unsplash.com/photo-1549298916-b41d501d3772"},
+ {name:"Adidas Ultraboost", price:7800, category:"adidas", img:"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519"},
+ {name:"Jordan 1 Retro", price:12000, category:"jordan", img:"https://images.unsplash.com/photo-1552346154-21d32810aba3"},
+ {name:"Nike Air Max 270", price:9000, category:"nike", img:"https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a"}
 ];
 
+let filtered = [...products];
 let cart = [];
 
 function displayProducts() {
   let container = document.getElementById("products");
-  products.forEach((p, i) => {
+  container.innerHTML = "";
+
+  filtered.forEach((p,i)=>{
     container.innerHTML += `
-      <div class="card">
-        <img src="${p.img}">
-        <h4>${p.name}</h4>
-        <p>$${p.price}</p>
-        <button onclick="addToCart(${i})">Add to Cart</button>
-      </div>
-    `;
+    <div class="card">
+      <img src="${p.img}">
+      <h4>${p.name}</h4>
+      <p class="price">KSh ${p.price}</p>
+      <button onclick="addToCart(${i})">Add to Cart</button>
+    </div>`;
   });
 }
 
-function addToCart(index) {
-  cart.push(products[index]);
+function filterCategory(cat){
+  filtered = cat==="all" ? products : products.filter(p=>p.category===cat);
+  displayProducts();
+}
+
+function searchProducts(){
+  let q = document.getElementById("search").value.toLowerCase();
+  filtered = products.filter(p=>p.name.toLowerCase().includes(q));
+  displayProducts();
+}
+
+function addToCart(i){
+  cart.push(filtered[i]);
   document.getElementById("cart-count").innerText = cart.length;
   updateCart();
 }
 
-function updateCart() {
+function updateCart(){
   let items = document.getElementById("cart-items");
-  let total = 0;
-  items.innerHTML = "";
+  let total = 300;
+  items.innerHTML="";
 
-  cart.forEach(p => {
-    items.innerHTML += `<p>${p.name} - $${p.price}</p>`;
+  cart.forEach(p=>{
+    items.innerHTML += `<p>${p.name} - KSh ${p.price}</p>`;
     total += p.price;
   });
 
   document.getElementById("total").innerText = total;
 }
 
-function toggleCart() {
-  let cartBox = document.getElementById("cart");
-  cartBox.style.display = cartBox.style.display === "none" ? "block" : "none";
+function toggleCart(){
+  let c = document.getElementById("cart");
+  c.style.display = c.style.display==="none"?"block":"none";
 }
 
-function checkout() {
-  let message = "Hello, I want to order:%0A";
-  cart.forEach(p => {
-    message += `${p.name} - $${p.price}%0A`;
+function checkout(){
+  let name = document.getElementById("name").value;
+  let location = document.getElementById("location").value;
+
+  if(!name || !location){
+    alert("Fill all fields");
+    return;
+  }
+
+  let msg = `NEW ORDER%0AName:${name}%0ALocation:${location}%0A%0A`;
+
+  cart.forEach(p=>{
+    msg += `${p.name} - KSh ${p.price}%0A`;
   });
 
-  window.open("https://wa.me/254721698932?text=" + message);
+  msg += `%0ADelivery:300%0ATotal:${document.getElementById("total").innerText}`;
+
+  window.open("https://wa.me/254721698932?text="+msg);
 }
 
 displayProducts();
