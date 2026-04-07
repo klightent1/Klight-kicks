@@ -13,7 +13,7 @@ body { margin:0; font-family:Arial; background:#f5f5f5; }
 .navbar {
   display:flex; justify-content:space-between; align-items:center;
   background:white; padding:12px 20px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);<button onclick="addProduct()">+ Add Product</button>
 }
 
 .logo { font-size:22px; font-weight:bold; }
@@ -207,13 +207,40 @@ function toggleCart(){
   c.style.display = c.style.display==="none"?"block":"none";
 }
 
-function checkout(){
+function checkout(){function checkout(){
   let name = document.getElementById("name").value;
   let location = document.getElementById("location").value;
 
   if(!name || !location){
     alert("Fill all fields");
     return;
+  }
+
+  let total = document.getElementById("total").innerText;
+
+  let msg = `NEW ORDER
+Name: ${name}
+Location: ${location}
+
+Items:
+`;
+
+  cart.forEach(p=>{
+    msg += `${p.name} - KSh ${p.price}\n`;
+  });
+
+  msg += `
+Total: KSh ${total}
+
+PAYMENT:
+Send money to M-Pesa:
+Number: 0721698932
+Name: Klight Kicks
+
+Send screenshot after payment.`;
+
+  window.open("https://wa.me/254721698932?text=" + encodeURIComponent(msg));
+}
   }
 
   let msg = `NEW ORDER%0AName:${name}%0ALocation:${location}%0A%0A`;
@@ -232,3 +259,26 @@ displayProducts();
 
 </body>
 </html>
+/* ADMIN ADD PRODUCT */
+function addProduct() {
+let name = prompt("Product name:");
+let price = prompt("Price:");
+let category = prompt("Category (nike/adidas/jordan):");
+let img = prompt("Image URL:");
+
+if(name && price && category && img){
+products.push({
+name:name,
+price:Number(price),
+category:category,
+img:img
+});
+
+```
+filtered = [...products];
+displayProducts();
+alert("Product added!");
+```
+
+}
+}
