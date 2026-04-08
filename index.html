@@ -19,7 +19,41 @@
   --accent2:#ff8c42;
   --text:#f0f0f0;
   --muted:#888;
-  --white:#ffffff;
+  --white:#ffffff;let products = [
+{
+id:1,
+name:"Nike Air Force 1",
+price:8500,
+category:"nike",
+images:[
+"https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500"
+],
+desc:"Classic white AF1"
+},
+{
+id:2,
+name:"Adidas Ultraboost",
+price:7800,
+category:"adidas",
+images:[
+"https://images.unsplash.com/photo-1582582429416-2d1f9b93e14b?w=500",
+"https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500"
+],
+desc:"Running comfort"
+},
+{
+id:3,
+name:"Jordan 1 Retro",
+price:12000,
+category:"jordan",
+images:[
+"https://images.unsplash.com/photo-1600180758895-6f35a62b79b0?w=500",
+"https://images.unsplash.com/photo-1552346154-21d32810aba3?w=500"
+],
+desc:"Street classic"
+}
+];
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
@@ -108,15 +142,41 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
 const SIZES = ['UK 6','UK 7','UK 8','UK 9','UK 10','UK 11','UK 12'];
 const PHONE = '254721698932';
 const DELIVERY = 300;
-
 let products = [
 {
 id:1,
 name:"Nike Air Force 1",
 price:8500,
 category:"nike",
-img:"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400&q=80",
+images:[
+"https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500"
+],
 desc:"Classic white AF1"
+},
+{
+id:2,
+name:"Adidas Ultraboost",
+price:7800,
+category:"adidas",
+images:[
+"https://images.unsplash.com/photo-1582582429416-2d1f9b93e14b?w=500",
+"https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500"
+],
+desc:"Running comfort"
+},
+{
+id:3,
+name:"Jordan 1 Retro",
+price:12000,
+category:"jordan",
+images:[
+"https://images.unsplash.com/photo-1600180758895-6f35a62b79b0?w=500",
+"https://images.unsplash.com/photo-1552346154-21d32810aba3?w=500"
+],
+desc:"Street classic"
+}
+];
 },
 {
 id:2,
@@ -198,19 +258,68 @@ c.appendChild(div);
 
 /* MODAL */
 function viewProduct(id){
-const p=products.find(x=>x.id===id);
-selectedProduct=p;
+  closeProduct();
 
-const sizeOptions=SIZES.map(s=>`<option>${s}</option>`).join("");
+  const p = products.find(x => x.id === id);
+  selectedProduct = p;
 
-document.body.insertAdjacentHTML("beforeend",`
-<div id="productModal">
-<h3>${p.name}</h3>
-<select id="modal-size">${sizeOptions}</select>
-<button onclick="addToCartFromModal()">Add</button>
-<button onclick="closeProduct()">Close</button>
-</div>
-`);
+  let currentImg = 0;
+
+  const sizeOptions = SIZES.map(s=>`<option>${s}</option>`).join("");
+
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+
+  overlay.innerHTML = `
+    <div class="modal-box">
+
+      <div class="modal-gallery">
+        <img src="${p.images[0]}" id="mainImg" class="main-img">
+
+        <div class="thumb-row">
+          ${p.images.map((img,i)=>`
+            <img src="${img}" 
+                 class="thumb ${i===0?'active':''}" 
+                 onclick="changeImage(${i})">
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="modal-content">
+        <h3>${p.name}</h3>
+        <p class="modal-price">KSh ${p.price.toLocaleString()}</p>
+        <p class="modal-desc">${p.desc}</p>
+
+        <select id="modal-size" class="modal-select">
+          <option value="" disabled selected>Select Size</option>
+          ${sizeOptions}
+        </select>
+
+        <div class="modal-actions">
+          <button class="btn-primary" onclick="addToCartFromModal()">🛒 Add to Cart</button>
+          <button class="btn-secondary" onclick="closeProduct()">Close</button>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // image switch function
+  window.changeImage = function(index){
+    const main = document.getElementById("mainImg");
+    main.src = p.images[index];
+
+    document.querySelectorAll(".thumb").forEach((t,i)=>{
+      t.classList.toggle("active", i===index);
+    });
+  };
+
+  overlay.addEventListener("click", e=>{
+    if(e.target===overlay) closeProduct();
+  });
+}
 }
 
 function closeProduct(){
