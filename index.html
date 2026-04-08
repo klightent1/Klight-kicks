@@ -1,15 +1,88 @@
-<script>
-const SIZES   = ['UK 6','UK 7','UK 8','UK 9','UK 10','UK 11','UK 12'];
-const PHONE   = '254721698932';
+const SIZES    = ['UK 6','UK 7','UK 8','UK 9','UK 10','UK 11','UK 12'];
+const PHONE    = '254721698932';
 const DELIVERY = 300;
 
-let products = [/* KEEP YOUR PRODUCTS ARRAY SAME */];
+/* ── PRODUCTS ───────────────────────────────────────────────
+   FIX: placeholder was never filled — full products array added
+─────────────────────────────────────────────────────────── */
+let products = [
+  {
+    id:1, name:"Nike Air Force 1", price:8500, category:"nike",
+    images:[
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80",
+      "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&q=80"
+    ],
+    desc:"Classic white leather upper with rubber sole"
+  },
+  {
+    id:2, name:"Adidas Ultraboost", price:7800, category:"adidas",
+    images:[
+      "https://images.unsplash.com/photo-1582582429416-2d1f9b93e14b?w=500&q=80",
+      "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500&q=80"
+    ],
+    desc:"Breathable knit upper with responsive cushioning"
+  },
+  {
+    id:3, name:"Jordan 1 Retro", price:12000, category:"jordan",
+    images:[
+      "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=500&q=80",
+      "https://images.unsplash.com/photo-1600180758895-6f35a62b79b0?w=500&q=80"
+    ],
+    desc:"Premium leather high-top street classic"
+  },
+  {
+    id:4, name:"Classic Leather Shoe", price:6500, category:"leather",
+    images:[
+      "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=500&q=80",
+      "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=500&q=80"
+    ],
+    desc:"Smart office leather for formal wear"
+  },
+  {
+    id:5, name:"Kids Sneakers", price:2500, category:"kids",
+    images:[
+      "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=500&q=80",
+      "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&q=80"
+    ],
+    desc:"Lightweight and durable kids wear"
+  },
+  {
+    id:6, name:"School Shoes", price:3000, category:"school",
+    images:[
+      "https://images.unsplash.com/photo-1528701800489-20be3c6d3f2d?w=500&q=80",
+      "https://images.unsplash.com/photo-1588361861040-ac9b1018f6d5?w=500&q=80"
+    ],
+    desc:"Durable school leather built to last"
+  },
+  {
+    id:7, name:"Ladies Sandals", price:1800, category:"sandals",
+    images:[
+      "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500&q=80",
+      "https://images.unsplash.com/photo-1562183241-b937e95585b6?w=500&q=80"
+    ],
+    desc:"Comfort soft sandals for everyday wear"
+  },
+  {
+    id:8, name:"Work Boots", price:4000, category:"rubber",
+    images:[
+      "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?w=500&q=80",
+      "https://images.unsplash.com/photo-1600185365923-3a2ce3cdb9eb?w=500&q=80"
+    ],
+    desc:"Heavy duty rubber boots for tough jobs"
+  }
+];
+
+/* FIX: generate stable ratings once at startup, not on every render */
+products = products.map(p => ({
+  ...p,
+  rating: (Math.random() * 1 + 4).toFixed(1)
+}));
 
 let filtered = [...products];
 let cart = [];
 let selectedProduct = null;
 
-/* ── DISPLAY PRODUCTS (FIXED) ───────────────────────────── */
+/* ── DISPLAY PRODUCTS ───────────────────────────────────── */
 function displayProducts(){
   const c = document.getElementById("products");
   c.innerHTML = "";
@@ -20,65 +93,46 @@ function displayProducts(){
   }
 
   filtered.forEach(p => {
-
     const oldPrice = Math.round(p.price * 1.25);
-    const rating = (Math.random()*1 + 4).toFixed(1);
 
     const div = document.createElement('div');
     div.className = 'card';
 
     div.innerHTML = `
       <div class="card-img-wrap">
-        <img src="${p.images[0]}" alt="${p.name}">
-
+        <img src="${p.images[0]}" alt="${p.name}" loading="lazy">
         <span class="card-badge">${p.category}</span>
-
-        <button class="quick-add" onclick="quickAdd(${p.id})">
-          + Add
-        </button>
+        <button class="quick-add" onclick="quickAdd(event,${p.id})">+ Add</button>
       </div>
-
       <div class="card-body">
-        <div class="rating">⭐ ${rating}</div>
-
+        <div class="rating">⭐ ${p.rating}</div>
         <h4>${p.name}</h4>
-
-        <p class="price">
-          KSh ${p.price.toLocaleString()}
-        </p>
-
-        <div style="text-decoration:line-through;color:#888;font-size:12px;">
-          KSh ${oldPrice.toLocaleString()}
-        </div>
-
+        <p class="price">KSh ${p.price.toLocaleString()}</p>
+        <div class="old-price">KSh ${oldPrice.toLocaleString()}</div>
         <small>${p.desc}</small>
-      </div>
-    `;
+      </div>`;
 
-    // FIX: allow clicking card WITHOUT triggering quick add
-    div.onclick = (e) => {
-      if(!e.target.classList.contains("quick-add")){
-        viewProduct(p.id);
-      }
-    };
+    /* FIX: use stopPropagation on the button so card click
+       doesn't also fire when quick-add is tapped           */
+    div.onclick = () => viewProduct(p.id);
 
     c.appendChild(div);
   });
 }
 
-/* ── QUICK ADD (NEW FEATURE) ───────────────────────────── */
-function quickAdd(id){
-  const product = products.find(p => p.id === id);
+/* ── QUICK ADD ──────────────────────────────────────────── */
+function quickAdd(e, id){
+  e.stopPropagation(); // FIX: prevent bubbling to card click
 
-  // auto assign random size (fast UX like real stores)
-  const randomSize = SIZES[Math.floor(Math.random()*SIZES.length)];
+  const product = products.find(p => p.id === id);
+  const randomSize = SIZES[Math.floor(Math.random() * SIZES.length)];
 
   cart.push({...product, size: randomSize});
   updateCartUI();
-  showToast(`🛒 ${product.name} added (Size ${randomSize})`);
+  showToast(`🛒 ${product.name} added (${randomSize})`);
 }
 
-/* ── PRODUCT MODAL ─────────────────────────────────────── */
+/* ── PRODUCT MODAL ──────────────────────────────────────── */
 function viewProduct(id){
   closeProduct();
 
@@ -94,18 +148,22 @@ function viewProduct(id){
   overlay.innerHTML = `
     <div class="modal-box">
       <div class="modal-gallery">
-        <img src="${p.images[0]}" id="mainImg" class="main-img">
+        <img src="${p.images[0]}" id="mainImg" class="main-img" alt="${p.name}">
+        <div class="thumb-row">
+          ${p.images.map((img,i) => `
+            <img src="${img}" class="thumb ${i===0?'active':''}"
+                 onclick="changeImage(${i})" alt="View ${i+1}">
+          `).join("")}
+        </div>
       </div>
       <div class="modal-content">
         <h3>${p.name}</h3>
         <p class="modal-price">KSh ${p.price.toLocaleString()}</p>
         <p class="modal-desc">${p.desc}</p>
-
         <select id="modal-size" class="modal-select">
           <option value="" disabled selected>Select Size</option>
           ${sizeOptions}
         </select>
-
         <div class="modal-actions">
           <button class="btn-primary" onclick="addToCartFromModal()">🛒 Add to Cart</button>
           <button class="btn-secondary" onclick="closeProduct()">Close</button>
@@ -113,8 +171,15 @@ function viewProduct(id){
       </div>
     </div>`;
 
-  overlay.onclick = (e) => { if(e.target === overlay) closeProduct(); };
+  overlay.onclick = e => { if(e.target === overlay) closeProduct(); };
   document.body.appendChild(overlay);
+
+  window.changeImage = function(index){
+    document.getElementById("mainImg").src = p.images[index];
+    document.querySelectorAll(".thumb").forEach((t,i) => {
+      t.classList.toggle("active", i === index);
+    });
+  };
 }
 
 function closeProduct(){
@@ -125,106 +190,126 @@ function addToCartFromModal(){
   const size = document.getElementById("modal-size").value;
 
   if(!size){
-    showToast("⚠️ Select size");
+    showToast("⚠️ Please select a size");
     return;
   }
 
   cart.push({...selectedProduct, size});
   updateCartUI();
   closeProduct();
-  showToast(`✅ Added to cart`);
+  showToast(`✅ ${selectedProduct.name} added to cart!`);
 }
 
-/* ── FILTER ───────────────────────────────────────────── */
+/* ── FILTER ─────────────────────────────────────────────── */
 function filterCategory(cat, btn){
   filtered = cat === "all" ? [...products] : products.filter(p => p.category === cat);
   displayProducts();
-
   document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
 }
 
-/* ── SEARCH ───────────────────────────────────────────── */
+/* ── SEARCH ─────────────────────────────────────────────── */
 function searchProducts(){
-  const q = document.getElementById("search").value.toLowerCase();
-
+  const q = document.getElementById("search").value.toLowerCase().trim();
   filtered = q
-    ? products.filter(p => p.name.toLowerCase().includes(q))
+    ? products.filter(p => p.name.toLowerCase().includes(q) || p.category.includes(q))
     : [...products];
-
   displayProducts();
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  if(!q) document.querySelector('.pill').classList.add('active');
 }
 
-/* ── CART ───────────────────────────────────────────── */
+/* ── CART ───────────────────────────────────────────────── */
 function updateCartUI(){
   let subtotal = 0;
   const wrap = document.getElementById("cart-items");
   wrap.innerHTML = "";
 
   if(cart.length === 0){
-    wrap.innerHTML = `<div class="cart-empty">Empty cart</div>`;
+    wrap.innerHTML = `<div class="cart-empty"><span class="emoji">👟</span>Your cart is empty.<br>Pick a pair!</div>`;
   } else {
     cart.forEach((p, i) => {
       subtotal += p.price;
-
-      wrap.innerHTML += `
-        <div class="cart-item">
-          <div>
-            <strong>${p.name}</strong>
-            <small>${p.size}</small>
-          </div>
-          <span>KSh ${p.price}</span>
-          <button onclick="removeFromCart(${i})">✕</button>
-        </div>`;
+      const item = document.createElement('div');
+      item.className = 'cart-item';
+      /* FIX: restored cart-item-info and cart-item-price classes */
+      item.innerHTML = `
+        <div class="cart-item-info">
+          <strong>${p.name}</strong>
+          <small>${p.size}</small>
+        </div>
+        <span class="cart-item-price">KSh ${p.price.toLocaleString()}</span>
+        <button class="remove-btn" onclick="removeFromCart(${i})" title="Remove">✕</button>`;
+      wrap.appendChild(item);
     });
   }
 
   const total = subtotal + DELIVERY;
 
-  document.getElementById("subtotal").innerText = subtotal;
-  document.getElementById("total").innerText = total;
-  document.getElementById("cart-count").innerText = cart.length;
+  /* FIX: use toLocaleString so numbers display as 8,500 not 8500 */
+  document.getElementById("subtotal").innerText = subtotal.toLocaleString();
+  document.getElementById("total").innerText    = total.toLocaleString();
+  document.getElementById("cart-count").innerText   = cart.length;
   document.getElementById("cart-count-2").innerText = cart.length;
-  document.getElementById("checkout-btn").disabled = cart.length === 0;
+  document.getElementById("checkout-btn").disabled  = cart.length === 0;
 }
 
 function removeFromCart(i){
-  cart.splice(i,1);
+  const name = cart[i].name;
+  cart.splice(i, 1);
   updateCartUI();
+  showToast(`🗑️ ${name} removed`);
 }
 
-/* ── CHECKOUT ───────────────────────────────────────── */
+/* ── CHECKOUT ───────────────────────────────────────────── */
 function checkout(){
-  const name = document.getElementById("cust-name").value;
-  const location = document.getElementById("cust-location").value;
+  const name     = document.getElementById("cust-name").value.trim();
+  const location = document.getElementById("cust-location").value.trim();
 
   if(!name || !location){
-    showToast("Fill all fields");
+    showToast("⚠️ Please fill in your name and location");
+    return;
+  }
+  if(cart.length === 0){
+    showToast("⚠️ Your cart is empty");
     return;
   }
 
-  let msg = `ORDER\n${name}\n${location}\n`;
+  /* FIX: calculate total in JS + include delivery & MPESA in message */
+  const subtotal = cart.reduce((sum, p) => sum + p.price, 0);
+  const total    = subtotal + DELIVERY;
 
-  cart.forEach(p=>{
-    msg += `${p.name} (${p.size}) - ${p.price}\n`;
+  let msg = `🛒 *NEW ORDER — Klight Kicks Kenya*\n`;
+  msg += `━━━━━━━━━━━━━━━\n`;
+  msg += `👤 Name: ${name}\n`;
+  msg += `📍 Location: ${location}\n\n`;
+  msg += `*Items:*\n`;
+  cart.forEach(p => {
+    msg += `• ${p.name} (${p.size}) — KSh ${p.price.toLocaleString()}\n`;
   });
+  msg += `━━━━━━━━━━━━━━━\n`;
+  msg += `Subtotal: KSh ${subtotal.toLocaleString()}\n`;
+  msg += `Delivery: KSh ${DELIVERY}\n`;
+  msg += `*Total: KSh ${total.toLocaleString()}*\n\n`;
+  msg += `💳 MPESA: 0721698932`;
 
   window.open("https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg));
 }
 
-/* ── TOAST ─────────────────────────────────────────── */
+/* ── TOAST ──────────────────────────────────────────────── */
 function showToast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+  /* FIX: clearTimeout prevents rapid toasts from interfering */
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 function scrollToCart(){
   document.getElementById('cart-sidebar').scrollIntoView({behavior:'smooth'});
 }
 
-/* ── INIT ─────────────────────────────────────────── */
+/* ── INIT ───────────────────────────────────────────────── */
 displayProducts();
 updateCartUI();
-</script>
