@@ -1,10 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klight Kicks Kenya | Premium Footwear</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ── VARIABLES ─────────────────────────────────────────── */
+:root{
+  --bg:#0a0a0a;
+  --surface:#111111;
+  --surface2:#1a1a1a;
+  --border:#2a2a2a;
+  --accent:#ff5c00;
+  --accent2:#ff8c42;
+  --text:#f0f0f0;
+  --muted:#888;
+  --white:#ffffff;
+}
+
+/* ── RESET ─────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:10px;}
+
+/* ── HEADER ────────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,10,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:26px;letter-spacing:3px;color:var(--white);
+  white-space:nowrap;
+}
+.logo span{color:var(--accent);}
+
+.search-wrap{flex:1;max-width:380px;position:relative;}
+.search-wrap input{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 16px 10px 40px;
+  border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;transition:border .2s,box-shadow .2s;
+}
+.search-wrap input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(255,92,0,0.2);
+}
+.search-icon{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:16px;pointer-events:none;
+}
+.cart-btn{
+  background:var(--accent);border:none;
+  color:var(--white);padding:10px 20px;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;
+  cursor:pointer;transition:background .2s,transform .15s;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.cart-btn:hover{background:var(--accent2);}
+.cart-btn:active{transform:scale(0.95);}
+.cart-badge{
+  background:var(--white);color:var(--accent);
+  border-radius:50%;width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+}
+
+/* ── HERO ──────────────────────────────────────────────── */
+.hero{
+  background:linear-gradient(135deg,#1a0a00 0%,#0a0a0a 60%);
+  border-bottom:1px solid var(--border);
+  padding:40px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  overflow:hidden;position:relative;
+}
+.hero::after{
+  content:'';position:absolute;right:-60px;top:-60px;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(255,92,0,0.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-text h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(36px,6vw,64px);line-height:1;letter-spacing:2px;
+}
+.hero-text h1 span{color:var(--accent);}
+.hero-text p{color:var(--muted);margin-top:8px;font-size:14px;}
+.hero-stat{display:flex;gap:32px;flex-shrink:0;}
+.stat{text-align:center;}
+.stat strong{
+  display:block;font-family:'Bebas Neue',sans-serif;
+  font-size:32px;color:var(--accent);letter-spacing:1px;
+}
+.stat small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;}
+
+/* ── LAYOUT ────────────────────────────────────────────── */
+.layout{
+  display:grid;grid-template-columns:1fr 320px;
+  max-width:1400px;margin:0 auto;
+}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{order:-1;}
+}
+.main{padding:24px;}
+
+/* ── FILTER PILLS ──────────────────────────────────────── */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.pill{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--muted);padding:7px 16px;border-radius:50px;
+  font-size:13px;font-weight:500;cursor:pointer;
+  transition:all .2s;text-transform:capitalize;
+}
+.pill:hover{border-color:var(--accent);color:var(--accent);}
+.pill.active{background:var(--accent);border-color:var(--accent);color:var(--white);}
+.pill:active{transform:scale(0.95);}
+
+/* ── PRODUCT GRID ──────────────────────────────────────── */
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+}
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);
+}
+.empty-state .emoji{font-size:48px;display:block;margin-bottom:12px;}
+
+/* ── CARD ──────────────────────────────────────────────── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;cursor:pointer;
+  opacity:0;transform:translateY(20px);
+  animation:fadeUp 0.5s ease forwards;
+  transition:border-color .2s,transform .25s,box-shadow .25s;
+}
+.card:hover{
+  border-color:var(--accent);transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(255,92,0,0.12);
+}
+.card:nth-child(1){animation-delay:.05s}
+.card:nth-child(2){animation-delay:.10s}
+.card:nth-child(3){animation-delay:.15s}
+.card:nth-child(4){animation-delay:.20s}
+.card:nth-child(5){animation-delay:.25s}
+.card:nth-child(6){animation-delay:.30s}
+.card:nth-child(7){animation-delay:.35s}
+.card:nth-child(8){animation-delay:.40s}
+
+.card-img-wrap{
+  position:relative;aspect-ratio:1;overflow:hidden;background:#1a1a1a;
+}
+.card-img-wrap img{
+  width:100%;height:100%;object-fit:cover;transition:transform .4s ease;
+}
+.card:hover .card-img-wrap img{transform:scale(1.07);}
+.card-badge{
+  position:absolute;top:10px;left:10px;
+  background:var(--accent);color:var(--white);
+  font-size:10px;font-weight:700;padding:3px 9px;
+  border-radius:50px;text-transform:uppercase;letter-spacing:.5px;
+}
+
+/* quick add button */
+.quick-add{
+  position:absolute;bottom:10px;right:10px;
+  background:var(--accent);color:var(--white);border:none;
+  padding:6px 12px;border-radius:50px;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;
+  opacity:0;transform:translateY(6px);
+  transition:opacity .2s,transform .2s,background .2s;
+}
+.card:hover .quick-add{opacity:1;transform:translateY(0);}
+.quick-add:hover{background:var(--accent2);}
+.quick-add:active{transform:scale(0.95)!important;}
+
+.card-body{padding:14px;}
+.rating{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.card-body h4{font-size:14px;font-weight:600;margin-bottom:4px;}
+.card-body .price{color:var(--accent);font-weight:700;font-size:15px;margin-bottom:2px;}
+.old-price{text-decoration:line-through;color:var(--muted);font-size:12px;margin-bottom:4px;}
+.card-body small{color:var(--muted);font-size:12px;}
+
+/* ── SIDEBAR ───────────────────────────────────────────── */
+.sidebar{
+  background:var(--surface);border-left:1px solid var(--border);
+  min-height:calc(100vh - 64px);padding:24px;
+  display:flex;flex-direction:column;gap:20px;
+  position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;
+}
+.sidebar-title{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;
+  display:flex;align-items:center;gap:8px;
+}
+.sidebar-title span{
+  background:var(--accent);color:var(--white);font-size:12px;
+  font-family:'DM Sans',sans-serif;font-weight:700;
+  padding:2px 8px;border-radius:50px;
+}
+.cart-items-wrap{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.cart-item{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  animation:fadeUp .3s ease forwards;
+}
+.cart-item-info{flex:1;}
+.cart-item-info strong{display:block;font-size:13px;font-weight:600;}
+.cart-item-info small{color:var(--muted);font-size:12px;}
+.cart-item-price{color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap;}
+.remove-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:16px;transition:color .2s;line-height:1;padding:2px;
+}
+.remove-btn:hover{color:#ff4444;}
+.cart-empty{text-align:center;padding:30px 10px;color:var(--muted);font-size:13px;}
+.cart-empty .emoji{font-size:36px;display:block;margin-bottom:8px;}
+
+/* ── ORDER SUMMARY ─────────────────────────────────────── */
+.order-summary{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:14px;
+}
+.order-row{
+  display:flex;justify-content:space-between;
+  font-size:13px;color:var(--muted);margin-bottom:8px;
+}
+.order-row.total{
+  color:var(--text);font-weight:700;font-size:15px;
+  border-top:1px solid var(--border);
+  padding-top:10px;margin-top:4px;margin-bottom:0;
+}
+.order-row.total span:last-child{color:var(--accent);}
+
+/* ── CHECKOUT FORM ─────────────────────────────────────── */
+.checkout-form{display:flex;flex-direction:column;gap:10px;}
+.field label{
+  display:block;font-size:12px;color:var(--muted);
+  margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;
+}
+.field input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:10px 14px;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:14px;outline:none;
+  transition:border .2s,box-shadow .2s;
+}
+.field input:focus{
+  border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,92,0,0.2);
+}
+
+/* ── BUTTONS ───────────────────────────────────────────── */
+.btn-primary{
+  width:100%;background:var(--accent);color:var(--white);border:none;
+  padding:13px;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px;
+  cursor:pointer;transition:background .2s,transform .15s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary:hover{background:var(--accent2);}
+.btn-primary:active{transform:scale(0.97);}
+.btn-primary:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;transform:none;}
+.btn-secondary{
+  flex:1;background:var(--surface2);color:var(--text);
+  border:1px solid var(--border);padding:12px;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;
+  cursor:pointer;transition:border-color .2s,transform .15s;
+}
+.btn-secondary:hover{border-color:var(--muted);}
+.btn-secondary:active{transform:scale(0.96);}
+
+/* ── MODAL ─────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.85);
+  display:flex;align-items:center;justify-content:center;
+  z-index:999;animation:fadeIn .3s ease;padding:20px;
+}
+.modal-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;width:100%;max-width:460px;
+  overflow:hidden;animation:pop .3s ease;
+}
+.modal-gallery{position:relative;background:#1a1a1a;}
+.main-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;transition:opacity .25s;}
+.thumb-row{display:flex;gap:8px;padding:10px;background:rgba(0,0,0,0.4);}
+.thumb{
+  width:60px;height:60px;object-fit:cover;border-radius:6px;
+  border:2px solid transparent;cursor:pointer;
+  opacity:0.6;transition:opacity .2s,border-color .2s;
+}
+.thumb.active{border-color:var(--accent);opacity:1;}
+.thumb:hover{opacity:1;}
+.modal-content{padding:20px;}
+.modal-content h3{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;
+  letter-spacing:1px;margin-bottom:4px;
+}
+.modal-price{color:var(--accent);font-weight:700;font-size:20px;margin-bottom:6px;}
+.modal-desc{color:var(--muted);font-size:13px;margin-bottom:16px;}
+.modal-select{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);padding:11px 14px;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:14px;outline:none;
+  margin-bottom:14px;cursor:pointer;transition:border .2s,box-shadow .2s;
+}
+.modal-select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,92,0,0.2);}
+.modal-actions{display:flex;gap:10px;}
+.modal-actions .btn-primary{flex:2;}
+
+/* ── TOAST ─────────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surface);border:1px solid var(--accent);
+  color:var(--text);padding:12px 22px;border-radius:50px;
+  font-size:14px;font-weight:500;z-index:9999;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;
+  opacity:0;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* ── ANIMATIONS ────────────────────────────────────────── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+@keyframes pop{
+  from{transform:scale(0.85);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+button:active{transform:scale(0.95);}
+input:focus,select:focus{box-shadow:0 0 0 2px rgba(255,92,0,0.4);}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Klight <span>Kicks</span> KE</div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Search shoes…" oninput="searchProducts()">
+  </div>
+  <button class="cart-btn" onclick="scrollToCart()">
+    🛒 Cart
+    <span class="cart-badge" id="cart-count">0</span>
+  </button>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <h1>Klight <span>Kicks</span><br>Kenya.</h1>
+    <p>Premium sneakers · Pay via MPESA · Fast Nairobi delivery</p>
+  </div>
+  <div class="hero-stat">
+    <div class="stat"><strong>8+</strong><small>Brands</small></div>
+    <div class="stat"><strong>KSh</strong><small>From 1,800</small></div>
+    <div class="stat"><strong>24h</strong><small>Delivery</small></div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <div class="main">
+    <div class="filters">
+      <button class="pill active" onclick="filterCategory('all',this)">All</button>
+      <button class="pill" onclick="filterCategory('nike',this)">Nike</button>
+      <button class="pill" onclick="filterCategory('adidas',this)">Adidas</button>
+      <button class="pill" onclick="filterCategory('jordan',this)">Jordan</button>
+      <button class="pill" onclick="filterCategory('leather',this)">Leather</button>
+      <button class="pill" onclick="filterCategory('kids',this)">Kids</button>
+      <button class="pill" onclick="filterCategory('school',this)">School</button>
+      <button class="pill" onclick="filterCategory('sandals',this)">Sandals</button>
+      <button class="pill" onclick="filterCategory('rubber',this)">Rubber</button>
+    </div>
+    <div class="products-grid" id="products"></div>
+  </div>
+
+  <!-- SIDEBAR / CART -->
+  <div class="sidebar" id="cart-sidebar">
+    <div class="sidebar-title">Cart <span id="cart-count-2">0</span></div>
+
+    <div class="cart-items-wrap" id="cart-items">
+      <div class="cart-empty">
+        <span class="emoji">👟</span>Your cart is empty.<br>Pick a pair!
+      </div>
+    </div>
+
+    <div class="order-summary">
+      <div class="order-row"><span>Subtotal</span><span>KSh <span id="subtotal">0</span></span></div>
+      <div class="order-row"><span>Delivery</span><span>KSh 300</span></div>
+      <div class="order-row total"><span>Total</span><span>KSh <span id="total">300</span></span></div>
+    </div>
+
+    <div class="checkout-form">
+      <div class="field">
+        <label>Your Name</label>
+        <input type="text" id="cust-name" placeholder="e.g. John Kamau">
+      </div>
+      <div class="field">
+        <label>Delivery Location</label>
+        <input type="text" id="cust-location" placeholder="e.g. Westlands, Nairobi">
+      </div>
+      <button class="btn-primary" id="checkout-btn" onclick="checkout()" disabled>
+        📲 Order via WhatsApp
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
 const SIZES    = ['UK 6','UK 7','UK 8','UK 9','UK 10','UK 11','UK 12'];
 const PHONE    = '254721698932';
 const DELIVERY = 300;
 
-/* ── PRODUCTS ───────────────────────────────────────────────
-   FIX: placeholder was never filled — full products array added
-─────────────────────────────────────────────────────────── */
+/* ── PRODUCTS ───────────────────────────────────────────── */
 let products = [
   {
     id:1, name:"Nike Air Force 1", price:8500, category:"nike",
@@ -72,7 +515,7 @@ let products = [
   }
 ];
 
-/* FIX: generate stable ratings once at startup, not on every render */
+/* stable ratings — generated once at startup */
 products = products.map(p => ({
   ...p,
   rating: (Math.random() * 1 + 4).toFixed(1)
@@ -94,10 +537,8 @@ function displayProducts(){
 
   filtered.forEach(p => {
     const oldPrice = Math.round(p.price * 1.25);
-
     const div = document.createElement('div');
     div.className = 'card';
-
     div.innerHTML = `
       <div class="card-img-wrap">
         <img src="${p.images[0]}" alt="${p.name}" loading="lazy">
@@ -111,22 +552,16 @@ function displayProducts(){
         <div class="old-price">KSh ${oldPrice.toLocaleString()}</div>
         <small>${p.desc}</small>
       </div>`;
-
-    /* FIX: use stopPropagation on the button so card click
-       doesn't also fire when quick-add is tapped           */
     div.onclick = () => viewProduct(p.id);
-
     c.appendChild(div);
   });
 }
 
 /* ── QUICK ADD ──────────────────────────────────────────── */
 function quickAdd(e, id){
-  e.stopPropagation(); // FIX: prevent bubbling to card click
-
+  e.stopPropagation();
   const product = products.find(p => p.id === id);
   const randomSize = SIZES[Math.floor(Math.random() * SIZES.length)];
-
   cart.push({...product, size: randomSize});
   updateCartUI();
   showToast(`🛒 ${product.name} added (${randomSize})`);
@@ -135,7 +570,6 @@ function quickAdd(e, id){
 /* ── PRODUCT MODAL ──────────────────────────────────────── */
 function viewProduct(id){
   closeProduct();
-
   const p = products.find(x => x.id === id);
   selectedProduct = p;
 
@@ -144,7 +578,6 @@ function viewProduct(id){
   const overlay = document.createElement("div");
   overlay.id = "productModal";
   overlay.className = "modal-overlay";
-
   overlay.innerHTML = `
     <div class="modal-box">
       <div class="modal-gallery">
@@ -188,12 +621,10 @@ function closeProduct(){
 
 function addToCartFromModal(){
   const size = document.getElementById("modal-size").value;
-
   if(!size){
     showToast("⚠️ Please select a size");
     return;
   }
-
   cart.push({...selectedProduct, size});
   updateCartUI();
   closeProduct();
@@ -232,7 +663,6 @@ function updateCartUI(){
       subtotal += p.price;
       const item = document.createElement('div');
       item.className = 'cart-item';
-      /* FIX: restored cart-item-info and cart-item-price classes */
       item.innerHTML = `
         <div class="cart-item-info">
           <strong>${p.name}</strong>
@@ -245,8 +675,6 @@ function updateCartUI(){
   }
 
   const total = subtotal + DELIVERY;
-
-  /* FIX: use toLocaleString so numbers display as 8,500 not 8500 */
   document.getElementById("subtotal").innerText = subtotal.toLocaleString();
   document.getElementById("total").innerText    = total.toLocaleString();
   document.getElementById("cart-count").innerText   = cart.length;
@@ -275,7 +703,6 @@ function checkout(){
     return;
   }
 
-  /* FIX: calculate total in JS + include delivery & MPESA in message */
   const subtotal = cart.reduce((sum, p) => sum + p.price, 0);
   const total    = subtotal + DELIVERY;
 
@@ -301,7 +728,6 @@ function showToast(msg){
   const t = document.getElementById("toast");
   t.innerText = msg;
   t.classList.add('show');
-  /* FIX: clearTimeout prevents rapid toasts from interfering */
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('show'), 2800);
 }
@@ -313,3 +739,6 @@ function scrollToCart(){
 /* ── INIT ───────────────────────────────────────────────── */
 displayProducts();
 updateCartUI();
+</script>
+</body>
+</html>
