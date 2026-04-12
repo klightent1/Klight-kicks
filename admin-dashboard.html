@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klight Admin</title>
+
+<style>
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: Arial;
+  padding: 20px;
+}
+
+.login-box, .dashboard {
+  max-width: 400px;
+  margin: auto;
+  background: #141414;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background: #1e1e1e;
+  border: none;
+  color: white;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #e8ff47;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.order {
+  background: #1e1e1e;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="login-box" id="login-box">
+  <h2>Admin Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard" style="display:none;">
+  <h2>Orders</h2>
+  <button onclick="logout()">Logout</button>
+  <div id="orders"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* SAME CONFIG AS YOUR STORE */
+const firebaseConfig = {
+  apiKey: apiKey: "AIzaSyBppxK5_6DikJAHl7QqbrQxjdP8_P6cDBA"
+  authDomain: "klight-f6067.firebaseapp.com",
+  projectId: "klight-f6067",
+  storageBucket: "klight-f6067.appspot.com",
+  messagingSenderId: "374626545204",
+  appId: "1:374626545204:web:7bc79b81206aea8f3be461"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* LOGIN */
+window.login = async function() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    alert("Login failed");
+  }
+};
+
+/* LOGOUT */
+window.logout = function() {
+  signOut(auth);
+};
+
+/* PROTECT + LOAD */
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById("login-box").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    loadOrders();
+  } else {
+    document.getElementById("login-box").style.display = "block";
+    document.getElementById("dashboard").style.display = "none";
+  }
+});
+
+/* LOAD ORDERS */
+async function loadOrders() {
+  const ordersDiv = document.getElementById("orders");
+  ordersDiv.innerHTML = "Loading...";
+
+  const querySnapshot = await getDocs(collection(db, "orders"));
+  ordersDiv.innerHTML = "";
+
+  querySnapshot.forEach(doc => {
+    const o = doc.data();
+
+    const div = document.createElement("div");
+    div.className = "order";
+    div.innerHTML = `
+      <strong>${o.orderId}</strong><br>
+      ${o.customer.name}<br>
+      ${o.customer.phone}<br>
+      KSh ${o.total}
+    `;
+
+    ordersDiv.appendChild(div);
+  });
+}
+</script>
+
+</body>
+</html>
