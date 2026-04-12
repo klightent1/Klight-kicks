@@ -373,7 +373,22 @@
 <!-- TOAST -->
 <div id="toast"></div>
 
-<script>
+<script type="module">
+import { initializeApp }                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBppxK5_6DikJAHl7QqbrQxjdP8_P6cDBA",
+  authDomain: "klight-f6067.firebaseapp.com",
+  projectId: "klight-f6067",
+  storageBucket: "klight-f6067.firebasestorage.app",
+  messagingSenderId: "374626545204",
+  appId: "1:374626545204:web:7bc79b81206aea8f3be461"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
 const SIZES    = ['UK 6','UK 7','UK 8','UK 9','UK 10','UK 11','UK 12'];
 const PHONE    = '254721698932';
 const DELIVERY = 300;
@@ -583,36 +598,49 @@ function removeFromCart(i) {
   showToast(`🗑️ ${name} removed`);
 }
 
-/* CHECKOUT */
-function checkout() {
+/* CHECKOUT — saves order to Firestore then opens WhatsApp */
+async function checkout() {
   const name     = document.getElementById("cust-name").value.trim();
   const location = document.getElementById("cust-location").value.trim();
   const phone    = document.getElementById("cust-phone").value.trim();
 
-  if (!name || !location || !phone) {
-    showToast("⚠️ Please fill in all fields");
-    return;
-  }
-  if (!/^\d{9,15}$/.test(phone.replace(/[\s\-\+]/g, ''))) {
-    showToast("⚠️ Enter a valid phone number");
-    return;
-  }
-  if (cart.length === 0) {
-    showToast("⚠️ Your cart is empty");
-    return;
-  }
+  if (!name || !location || !phone) { showToast("⚠️ Please fill in all fields"); return; }
+  if (!/^\d{9,15}$/.test(phone.replace(/[\s\-\+]/g, ''))) { showToast("⚠️ Enter a valid phone number"); return; }
+  if (cart.length === 0) { showToast("⚠️ Your cart is empty"); return; }
 
   const subtotal = cart.reduce((s, p) => s + p.price, 0);
   const total    = subtotal + DELIVERY;
   const orderId  = "KK" + Math.floor(Math.random() * 100000);
 
+  const btn = document.getElementById("checkout-btn");
+  btn.disabled = true;
+  btn.textContent = "Saving order...";
+
+  try {
+    await addDoc(collection(db, "orders"), {
+      orderId,
+      customer: { name, location, phone },
+      items: cart.map(p => ({ id: p.id, name: p.name, size: p.size, price: p.price })),
+      subtotal,
+      delivery: DELIVERY,
+      total,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+    showToast("✅ Order saved!");
+  } catch(err) {
+    console.error("Firestore error:", err);
+    showToast("⚠️ Could not save order, sending via WhatsApp anyway");
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg> Order via WhatsApp`;
+
   let msg = `🛒 *NEW ORDER — Klight Kicks*\n`;
   msg += `🧾 Order ID: ${orderId}\n`;
   msg += `━━━━━━━━━━━━━━━\n`;
   msg += `👤 ${name}\n📍 ${location}\n📞 ${phone}\n\n`;
-  cart.forEach(p => {
-    msg += `• ${p.name} (${p.size}) — KSh ${p.price.toLocaleString()}\n`;
-  });
+  cart.forEach(p => { msg += `• ${p.name} (${p.size}) — KSh ${p.price.toLocaleString()}\n`; });
   msg += `━━━━━━━━━━━━━━━\n`;
   msg += `Subtotal: KSh ${subtotal.toLocaleString()}\n`;
   msg += `Delivery: KSh ${DELIVERY.toLocaleString()}\n`;
@@ -633,6 +661,15 @@ function showToast(msg) {
 /* INIT */
 displayProducts();
 updateCartUI();
+
+/* EXPOSE to window so HTML onclick="" attributes work from module scope */
+window.filterProducts  = filterProducts;
+window.quickAdd        = quickAdd;
+window.openModal       = openModal;
+window.closeModal      = closeModal;
+window.confirmSize     = confirmSize;
+window.removeFromCart  = removeFromCart;
+window.checkout        = checkout;
 </script>
 </body>
 </html>
