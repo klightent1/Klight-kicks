@@ -144,7 +144,17 @@ async function checkout(){
   cart.forEach(p=>msg+=`${p.name} - ${p.price}\n`);
   msg+=`Total: ${total}`;
 
-  window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`);
+  await fetch("https://your-backend-url/stkpush", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    phone,
+    amount: total,
+    orderId
+  })
+});
+
+showToast("📲 Payment request sent to your phone!");
 }
 
 renderProducts();
